@@ -21,10 +21,9 @@ import unittest
 DBStorage = db_storage.DBStorage
 classes = {"Amenity": Amenity, "City": City, "Place": Place,
            "Review": Review, "State": State, "User": User}
-STOR_TYPE = environ.get("HBNB_TYPE_STORAGE")
 
 
-@unittest.skipIf(STOR_TYPE != "db", "Skip")
+@unittest.skipIf(models.storage_t != "db", "Skip")
 class TestDBStorageDocs(unittest.TestCase):
     """Tests to check the documentation and style of DBStorage class"""
     @classmethod
@@ -35,7 +34,7 @@ class TestDBStorageDocs(unittest.TestCase):
     def tearDownClass():
         """Tests for removing storage objects"""
         db_storage.delete_all()
-    
+
     def test_pep8_conformance_db_storage(self):
         """Test that models/engine/db_storage.py conforms to PEP8."""
         pep8s = pep8.StyleGuide(quiet=True)
@@ -73,6 +72,7 @@ test_db_storage.py'])
             self.assertTrue(len(func[1].__doc__) >= 1,
                             "{:s} method needs a docstring".format(func[0]))
 
+
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
@@ -91,25 +91,28 @@ class TestFileStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
-    
+
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_get(self):
         """Test for the get"""
         storage = DBStorage()
-        state = State(name: "Ogun")
+        value = {"name": "Ogun"}
+        state = State(**value)
         storage.new(state)
         storage.save()
         newState = storage.get(State, state.id)
-        self.assertEquals(newState, state)
+        self.assertEqual(newState, state)
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_count(self):
         """Test for Count"""
         storage = DBStorage()
-        state = State(name="Lagos")
+        value = {"name": "Ogun"}
+        state = State(**value)
         storage.new(state)
-        city = City(name="Yaba", state_id: state.id)
+        value = {"name": "Yaba", "state_id": state.id}
+        city = City(**value)
         storage.new(city)
         storage.save()
-        total = storage.count()
-        self.assertEquals(len(storage.all()), total)
+        self.assertEqual(len(storage.all()), storage.count())
+

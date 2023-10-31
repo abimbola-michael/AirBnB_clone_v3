@@ -50,11 +50,12 @@ class FileStorage:
 
     def reload(self):
         """deserializes the JSON file to __objects"""
+        json_objects = {}
         try:
             with open(self.__file_path, 'r') as f:
                 jo = json.load(f)
-            for key in jo:
-                self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
+                for key in jo:
+                    self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
         except:
             pass
 
@@ -71,12 +72,15 @@ class FileStorage:
 
     def get(self, cls, id):
         """retrieve one object"""
-        if id and cls and cls in classes.values():
-            obj = self.all(cls)
-            name = "{}.{}".format(cls, id)
-            return obj.get(name)
+        name = "{}.{}".format(cls.__name__, id)
+        objs = self.all(cls)
+        if name in objs:
+            return objs.get(name)
         return None
 
     def count(self, cls=None):
         """count the number of objects in storage"""
-        return len(self.all(cls))
+        if cls:
+            return len(self.all(cls))
+        return sum(len(self.all(value)) for key, value in classes.items())
+
